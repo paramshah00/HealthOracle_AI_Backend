@@ -1,0 +1,315 @@
+import json
+import os
+
+BASE_DIR = os.path.join(os.path.dirname(__file__), "Notebook")
+os.makedirs(BASE_DIR, exist_ok=True)
+
+def create_notebook(name, file_name, drop_cols, target_col):
+    cells = []
+    
+    # Markdown Header
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            f"# {name.replace('_', ' ').title()} Model Training & Comparison\n",
+            "This notebook loads the dataset, applies data cleaning and preprocessing, trains multiple models, compares them on all criteria (Accuracy, Precision, Recall, F1-Score, ROC-AUC), and saves the best pipeline."
+        ]
+    })
+    
+    # Imports
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "import pandas as pd\n",
+            "import numpy as np\n",
+            "import os\n",
+            "import joblib\n",
+            "from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold\n",
+            "from sklearn.pipeline import Pipeline\n",
+            "from sklearn.compose import ColumnTransformer\n",
+            "from sklearn.impute import SimpleImputer\n",
+            "from sklearn.preprocessing import StandardScaler, OneHotEncoder\n",
+            "from sklearn.metrics import (\n",
+            "    accuracy_score, precision_score, recall_score,\n",
+            "    f1_score, roc_auc_score, classification_report,\n",
+            "    confusion_matrix\n",
+            ")\n",
+            "\n",
+            "# Models to compare\n",
+            "from sklearn.linear_model import LogisticRegression\n",
+            "from sklearn.naive_bayes import GaussianNB\n",
+            "from sklearn.ensemble import (\n",
+            "    RandomForestClassifier,\n",
+            "    GradientBoostingClassifier,\n",
+            "    AdaBoostClassifier\n",
+            ")\n",
+            "from sklearn.svm import SVC\n",
+            "from sklearn.neighbors import KNeighborsClassifier\n",
+            "from sklearn.tree import DecisionTreeClassifier\n",
+            "\n",
+            "import warnings\n",
+            "warnings.filterwarnings('ignore')"
+        ]
+    })
+    
+    # Load Data
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "BASE_DIR = os.path.abspath('..')\n",
+            "DATA_DIR = os.path.join(BASE_DIR, 'Data')\n",
+            "MODEL_DIR = os.path.join(BASE_DIR, 'Model')\n",
+            "os.makedirs(MODEL_DIR, exist_ok=True)\n",
+            "\n",
+            f"file_path = os.path.join(DATA_DIR, '{file_name}')\n",
+            "df = pd.read_csv(file_path)\n",
+            "print(f\"Dataset shape: {df.shape}\")\n",
+            f"print(f\"Class distribution:\\n{{df['{target_col}'].value_counts()}}\\n\")\n",
+            "df.head()"
+        ]
+    })
+    
+    # Data Cleaning
+    cleaning_code = []
+    if name == 'kidney_disease':
+        cleaning_code = [
+            "def clean_kidney_disease(df):\n",
+            "    df = df.replace('?', np.nan)\n",
+            "    df = df.replace('\\t?', np.nan)\n",
+            "    df = df.replace('\\t', np.nan)\n",
+            "    df = df.replace(' ', np.nan)\n",
+            "    \n",
+            "    for col in df.select_dtypes(include=['object']):\n",
+            "        df[col] = df[col].astype(str).str.strip()\n",
+            "    \n",
+            "    if 'classification' in df.columns:\n",
+            "        df['classification'] = df['classification'].replace({'ckd\\t': 'ckd'})\n",
+            "        df['classification'] = df['classification'].map({'ckd': 1, 'notckd': 0})\n",
+            "        df = df.dropna(subset=['classification']).copy()\n",
+            "        \n",
+            "    numeric_cols = ['age', 'bp', 'sg', 'al', 'su', 'bgr', 'bu', 'sc', 'sod', 'pot', 'hemo', 'pcv', 'wc', 'rc']\n",
+            "    for col in numeric_cols:\n",
+            "        if col in df.columns:\n",
+            "            df[col] = pd.to_numeric(df[col], errors='coerce')\n",
+            "            \n",
+            "    return df\n",
+            "\n",
+            "df = clean_kidney_disease(df)\n"
+        ]
+    else:
+        cleaning_code = [
+            "# Basic cleaning\n",
+            "df.replace(r'^\\s*$', np.nan, regex=True, inplace=True)\n"
+        ]
+        
+    if drop_cols:
+        cleaning_code.append(f"df = df.drop(columns={drop_cols}, errors='ignore')\n")
+        
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": cleaning_code
+    })
+    
+    # Base Preprocessor
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            f"X = df.drop(columns=['{target_col}'])\n",
+            f"y = df['{target_col}'].astype(int)\n",
+            "\n",
+            "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)\n",
+            "\n",
+            "numeric_features = X.select_dtypes(include=['int64', 'float64']).columns.tolist()\n",
+            "categorical_features = X.select_dtypes(include=['object', 'category']).columns.tolist()\n",
+            "\n",
+            "numeric_transformer = Pipeline(steps=[\n",
+            "    ('imputer', SimpleImputer(strategy='median')),\n",
+            "    ('scaler', StandardScaler())\n",
+            "])\n",
+            "\n",
+            "categorical_transformer = Pipeline(steps=[\n",
+            "    ('imputer', SimpleImputer(strategy='most_frequent')),\n",
+            "    ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))\n",
+            "])\n",
+            "\n",
+            "preprocessor = ColumnTransformer(\n",
+            "    transformers=[\n",
+            "        ('num', numeric_transformer, numeric_features),\n",
+            "        ('cat', categorical_transformer, categorical_features)\n",
+            "    ])\n"
+        ]
+    })
+    
+    # Models to compare
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "pipelines = {\n",
+            "    'Logistic Regression': Pipeline([('preprocessor', preprocessor), ('model', LogisticRegression(max_iter=1000, random_state=42))]),\n",
+            "    'Gaussian Naive Bayes': Pipeline([('preprocessor', preprocessor), ('model', GaussianNB())]),\n",
+            "    'Random Forest': Pipeline([('preprocessor', preprocessor), ('model', RandomForestClassifier(n_estimators=200, max_depth=10, min_samples_split=5, min_samples_leaf=2, random_state=42))]),\n",
+            "    'Gradient Boosting': Pipeline([('preprocessor', preprocessor), ('model', GradientBoostingClassifier(n_estimators=200, learning_rate=0.1, max_depth=4, min_samples_split=5, min_samples_leaf=2, random_state=42))]),\n",
+            "    # 'SVM (RBF)': Pipeline([('preprocessor', preprocessor), ('model', SVC(kernel='rbf', probability=True, random_state=42))]),\n",
+            "    # 'KNN': Pipeline([('preprocessor', preprocessor), ('model', KNeighborsClassifier(n_neighbors=7))]),\n",
+            "    'Decision Tree': Pipeline([('preprocessor', preprocessor), ('model', DecisionTreeClassifier(max_depth=5, min_samples_split=5, min_samples_leaf=2, random_state=42))]),\n",
+            "    'AdaBoost': Pipeline([('preprocessor', preprocessor), ('model', AdaBoostClassifier(n_estimators=100, learning_rate=0.1, random_state=42))]),\n",
+            "}\n"
+        ]
+    })
+    
+    # Train & Compare
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "print('=' * 70)\n",
+            "print('  MODEL COMPARISON RESULTS')\n",
+            "print('=' * 70)\n",
+            "\n",
+            "results = []\n",
+            "cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\n",
+            "\n",
+            "for name, pipeline in pipelines.items():\n",
+            "    try:\n",
+            "        pipeline.fit(X_train, y_train)\n",
+            "        y_pred = pipeline.predict(X_test)\n",
+            "        if hasattr(pipeline['model'], 'predict_proba'):\n",
+            "            y_proba = pipeline.predict_proba(X_test)[:, 1]\n",
+            "        else:\n",
+            "            y_proba = y_pred\n",
+            "        \n",
+            "        acc = accuracy_score(y_test, y_pred)\n",
+            "        prec = precision_score(y_test, y_pred, zero_division=0)\n",
+            "        rec = recall_score(y_test, y_pred, zero_division=0)\n",
+            "        f1 = f1_score(y_test, y_pred, zero_division=0)\n",
+            "        auc = roc_auc_score(y_test, y_proba) if len(np.unique(y_test)) == 2 else 0\n",
+            "        \n",
+            "        cv_scores = cross_val_score(pipeline, X_train, y_train, cv=cv, scoring='accuracy')\n",
+            "        cv_mean = cv_scores.mean()\n",
+            "        cv_std = cv_scores.std()\n",
+            "        \n",
+            "        results.append({\n",
+            "            'Model': name,\n",
+            "            'Accuracy': acc,\n",
+            "            'Precision': prec,\n",
+            "            'Recall': rec,\n",
+            "            'F1-Score': f1,\n",
+            "            'ROC-AUC': auc,\n",
+            "            'CV Mean': cv_mean,\n",
+            "            'CV Std': cv_std,\n",
+            "        })\n",
+            "    except Exception as e:\n",
+            "        print(f\"Error training {name}: {e}\")\n"
+        ]
+    })
+    
+    # Best Model Selection
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "results_df = pd.DataFrame(results)\n",
+            "results_df['Composite'] = (\n",
+            "    results_df['F1-Score'] * 0.30 +\n",
+            "    results_df['ROC-AUC'] * 0.30 +\n",
+            "    results_df['Accuracy'] * 0.15 +\n",
+            "    results_df['Precision'] * 0.10 +\n",
+            "    results_df['Recall'] * 0.10 +\n",
+            "    results_df['CV Mean'] * 0.05\n",
+            ")\n",
+            "\n",
+            "results_df = results_df.sort_values('Composite', ascending=False).reset_index(drop=True)\n",
+            "\n",
+            "print('\\n\\n' + '=' * 70)\n",
+            "print('  FINAL COMPARISON TABLE (sorted by composite score)')\n",
+            "print('=' * 70)\n",
+            "print(results_df.to_string(index=False, float_format=lambda x: f'{x:.4f}'))\n",
+            "\n",
+            "best_model_name = results_df.iloc[0]['Model']\n",
+            "print(f\"\\n{'★' * 50}\")\n",
+            "print(f\"  BEST MODEL: {best_model_name}\")\n",
+            "print(f\"  Composite Score: {results_df.iloc[0]['Composite']:.4f}\")\n",
+            "print(f\"{'★' * 50}\")\n"
+        ]
+    })
+    
+    # Train and Save
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "best_pipeline = pipelines[best_model_name]\n",
+            "y_pred_best = best_pipeline.predict(X_test)\n",
+            "\n",
+            "print(f\"\\n{'=' * 70}\")\n",
+            "print(f\"  DETAILED REPORT: {best_model_name}\")\n",
+            "print(f\"{'=' * 70}\")\n",
+            "print(\"\\nClassification Report:\")\n",
+            "print(classification_report(y_test, y_pred_best))\n",
+            "\n",
+            f"model_path = os.path.join(MODEL_DIR, '{name}_pipeline.pkl')\n",
+            "joblib.dump(best_pipeline, model_path)\n",
+            "print(f\"\\n✅ Saved best model ({best_model_name}) pipeline to {model_path}\")"
+        ]
+    })
+
+    notebook = {
+        "cells": cells,
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "codemirror_mode": {"name": "ipython", "version": 3},
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.10.0"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 4
+    }
+    
+    out_path = os.path.join(BASE_DIR, f"train_{name}_model.ipynb")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w', encoding='utf-8') as f:
+        json.dump(notebook, f, indent=1)
+    print(f"Created: {out_path}")
+
+configs = [
+    ("heart_disease", "heart_disease.csv", [], "target"),
+    ("hypertension", "hypertension.csv", [], "target"),
+    ("stroke", "stroke.csv", ["id"], "stroke"),
+    ("kidney_disease", "kidney_disease.csv", ["id"], "classification")
+]
+
+if __name__ == '__main__':
+    for conf in configs:
+        create_notebook(*conf)

@@ -1,0 +1,554 @@
+{
+    "heart_disease": {
+        "model_file": "heart_disease_pipeline.pkl",
+        "display_name": "Heart Disease",
+        "features": [
+            {
+                "name": "age",
+                "label": "Age",
+                "type": "float",
+                "min": 29.0,
+                "max": 77.0,
+                "hint": "Enter value for age"
+            },
+            {
+                "name": "sex",
+                "label": "Sex",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for sex"
+            },
+            {
+                "name": "cp",
+                "label": "Cp",
+                "type": "float",
+                "min": 0.0,
+                "max": 3.0,
+                "hint": "Enter value for cp"
+            },
+            {
+                "name": "trestbps",
+                "label": "Trestbps",
+                "type": "float",
+                "min": 94.0,
+                "max": 200.0,
+                "hint": "Enter value for trestbps"
+            },
+            {
+                "name": "chol",
+                "label": "Chol",
+                "type": "float",
+                "min": 126.0,
+                "max": 564.0,
+                "hint": "Enter value for chol"
+            },
+            {
+                "name": "fbs",
+                "label": "Fbs",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for fbs"
+            },
+            {
+                "name": "restecg",
+                "label": "Restecg",
+                "type": "float",
+                "min": 0.0,
+                "max": 2.0,
+                "hint": "Enter value for restecg"
+            },
+            {
+                "name": "thalach",
+                "label": "Thalach",
+                "type": "float",
+                "min": 71.0,
+                "max": 202.0,
+                "hint": "Enter value for thalach"
+            },
+            {
+                "name": "exang",
+                "label": "Exang",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for exang"
+            },
+            {
+                "name": "oldpeak",
+                "label": "Oldpeak",
+                "type": "float",
+                "min": 0.0,
+                "max": 6.2,
+                "hint": "Enter value for oldpeak"
+            },
+            {
+                "name": "slope",
+                "label": "Slope",
+                "type": "float",
+                "min": 0.0,
+                "max": 2.0,
+                "hint": "Enter value for slope"
+            },
+            {
+                "name": "ca",
+                "label": "Ca",
+                "type": "float",
+                "min": 0.0,
+                "max": 4.0,
+                "hint": "Enter value for ca"
+            },
+            {
+                "name": "thal",
+                "label": "Thal",
+                "type": "float",
+                "min": 0.0,
+                "max": 3.0,
+                "hint": "Enter value for thal"
+            }
+        ],
+        "positive_label": "Positive for Heart Disease",
+        "negative_label": "Negative for Heart Disease"
+    },
+    "hypertension": {
+        "model_file": "hypertension_pipeline.pkl",
+        "display_name": "Hypertension",
+        "features": [
+            {
+                "name": "age",
+                "label": "Age",
+                "type": "float",
+                "min": 11.0,
+                "max": 98.0,
+                "hint": "Enter value for age"
+            },
+            {
+                "name": "sex",
+                "label": "Sex",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for sex"
+            },
+            {
+                "name": "cp",
+                "label": "Cp",
+                "type": "float",
+                "min": 0.0,
+                "max": 3.0,
+                "hint": "Enter value for cp"
+            },
+            {
+                "name": "trestbps",
+                "label": "Trestbps",
+                "type": "float",
+                "min": 94.0,
+                "max": 200.0,
+                "hint": "Enter value for trestbps"
+            },
+            {
+                "name": "chol",
+                "label": "Chol",
+                "type": "float",
+                "min": 126.0,
+                "max": 564.0,
+                "hint": "Enter value for chol"
+            },
+            {
+                "name": "fbs",
+                "label": "Fbs",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for fbs"
+            },
+            {
+                "name": "restecg",
+                "label": "Restecg",
+                "type": "float",
+                "min": 0.0,
+                "max": 2.0,
+                "hint": "Enter value for restecg"
+            },
+            {
+                "name": "thalach",
+                "label": "Thalach",
+                "type": "float",
+                "min": 71.0,
+                "max": 202.0,
+                "hint": "Enter value for thalach"
+            },
+            {
+                "name": "exang",
+                "label": "Exang",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for exang"
+            },
+            {
+                "name": "oldpeak",
+                "label": "Oldpeak",
+                "type": "float",
+                "min": 0.0,
+                "max": 6.2,
+                "hint": "Enter value for oldpeak"
+            },
+            {
+                "name": "slope",
+                "label": "Slope",
+                "type": "float",
+                "min": 0.0,
+                "max": 2.0,
+                "hint": "Enter value for slope"
+            },
+            {
+                "name": "ca",
+                "label": "Ca",
+                "type": "float",
+                "min": 0.0,
+                "max": 4.0,
+                "hint": "Enter value for ca"
+            },
+            {
+                "name": "thal",
+                "label": "Thal",
+                "type": "float",
+                "min": 0.0,
+                "max": 3.0,
+                "hint": "Enter value for thal"
+            }
+        ],
+        "positive_label": "Positive for Hypertension",
+        "negative_label": "Negative for Hypertension"
+    },
+    "stroke": {
+        "model_file": "stroke_pipeline.pkl",
+        "display_name": "Stroke",
+        "features": [
+            {
+                "name": "gender",
+                "label": "Gender",
+                "type": "str",
+                "options": [
+                    "Male",
+                    "Female",
+                    "Other"
+                ],
+                "hint": "Enter value for gender"
+            },
+            {
+                "name": "age",
+                "label": "Age",
+                "type": "float",
+                "min": 0.08,
+                "max": 82.0,
+                "hint": "Enter value for age"
+            },
+            {
+                "name": "hypertension",
+                "label": "Hypertension",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for hypertension"
+            },
+            {
+                "name": "heart_disease",
+                "label": "Heart Disease",
+                "type": "float",
+                "min": 0.0,
+                "max": 1.0,
+                "hint": "Enter value for heart_disease"
+            },
+            {
+                "name": "ever_married",
+                "label": "Ever Married",
+                "type": "str",
+                "options": [
+                    "Yes",
+                    "No"
+                ],
+                "hint": "Enter value for ever_married"
+            },
+            {
+                "name": "work_type",
+                "label": "Work Type",
+                "type": "str",
+                "options": [
+                    "Private",
+                    "Self-employed",
+                    "Govt_job",
+                    "children",
+                    "Never_worked"
+                ],
+                "hint": "Enter value for work_type"
+            },
+            {
+                "name": "Residence_type",
+                "label": "Residence Type",
+                "type": "str",
+                "options": [
+                    "Urban",
+                    "Rural"
+                ],
+                "hint": "Enter value for Residence_type"
+            },
+            {
+                "name": "avg_glucose_level",
+                "label": "Avg Glucose Level",
+                "type": "float",
+                "min": 55.12,
+                "max": 271.74,
+                "hint": "Enter value for avg_glucose_level"
+            },
+            {
+                "name": "bmi",
+                "label": "Bmi",
+                "type": "float",
+                "min": 10.3,
+                "max": 97.6,
+                "hint": "Enter value for bmi"
+            },
+            {
+                "name": "smoking_status",
+                "label": "Smoking Status",
+                "type": "str",
+                "options": [
+                    "formerly smoked",
+                    "never smoked",
+                    "smokes",
+                    "Unknown"
+                ],
+                "hint": "Enter value for smoking_status"
+            }
+        ],
+        "positive_label": "Positive for Stroke",
+        "negative_label": "Negative for Stroke"
+    },
+    "kidney_disease": {
+        "model_file": "kidney_disease_pipeline.pkl",
+        "display_name": "Kidney Disease",
+        "features": [
+            {
+                "name": "age",
+                "label": "Age",
+                "type": "float",
+                "min": 2.0,
+                "max": 90.0,
+                "hint": "Enter value for age"
+            },
+            {
+                "name": "bp",
+                "label": "Bp",
+                "type": "float",
+                "min": 50.0,
+                "max": 180.0,
+                "hint": "Enter value for bp"
+            },
+            {
+                "name": "sg",
+                "label": "Sg",
+                "type": "float",
+                "min": 1.0,
+                "max": 1.02,
+                "hint": "Enter value for sg"
+            },
+            {
+                "name": "al",
+                "label": "Al",
+                "type": "float",
+                "min": 0.0,
+                "max": 5.0,
+                "hint": "Enter value for al"
+            },
+            {
+                "name": "su",
+                "label": "Su",
+                "type": "float",
+                "min": 0.0,
+                "max": 5.0,
+                "hint": "Enter value for su"
+            },
+            {
+                "name": "rbc",
+                "label": "Rbc",
+                "type": "str",
+                "options": [
+                    "normal",
+                    "abnormal"
+                ],
+                "hint": "Enter value for rbc"
+            },
+            {
+                "name": "pc",
+                "label": "Pc",
+                "type": "str",
+                "options": [
+                    "normal",
+                    "abnormal"
+                ],
+                "hint": "Enter value for pc"
+            },
+            {
+                "name": "pcc",
+                "label": "Pcc",
+                "type": "str",
+                "options": [
+                    "notpresent",
+                    "present"
+                ],
+                "hint": "Enter value for pcc"
+            },
+            {
+                "name": "ba",
+                "label": "Ba",
+                "type": "str",
+                "options": [
+                    "notpresent",
+                    "present"
+                ],
+                "hint": "Enter value for ba"
+            },
+            {
+                "name": "bgr",
+                "label": "Bgr",
+                "type": "float",
+                "min": 22.0,
+                "max": 490.0,
+                "hint": "Enter value for bgr"
+            },
+            {
+                "name": "bu",
+                "label": "Bu",
+                "type": "float",
+                "min": 1.5,
+                "max": 391.0,
+                "hint": "Enter value for bu"
+            },
+            {
+                "name": "sc",
+                "label": "Sc",
+                "type": "float",
+                "min": 0.4,
+                "max": 76.0,
+                "hint": "Enter value for sc"
+            },
+            {
+                "name": "sod",
+                "label": "Sod",
+                "type": "float",
+                "min": 4.5,
+                "max": 163.0,
+                "hint": "Enter value for sod"
+            },
+            {
+                "name": "pot",
+                "label": "Pot",
+                "type": "float",
+                "min": 2.5,
+                "max": 47.0,
+                "hint": "Enter value for pot"
+            },
+            {
+                "name": "hemo",
+                "label": "Hemo",
+                "type": "float",
+                "min": 3.1,
+                "max": 17.8,
+                "hint": "Enter value for hemo"
+            },
+            {
+                "name": "pcv",
+                "label": "Pcv",
+                "type": "float",
+                "min": 9.0,
+                "max": 54.0,
+                "hint": "Enter value for pcv"
+            },
+            {
+                "name": "wc",
+                "label": "Wc",
+                "type": "float",
+                "min": 2200.0,
+                "max": 26400.0,
+                "hint": "Enter value for wc"
+            },
+            {
+                "name": "rc",
+                "label": "Rc",
+                "type": "float",
+                "min": 2.1,
+                "max": 8.0,
+                "hint": "Enter value for rc"
+            },
+            {
+                "name": "htn",
+                "label": "Htn",
+                "type": "str",
+                "options": [
+                    "yes",
+                    "no"
+                ],
+                "hint": "Enter value for htn"
+            },
+            {
+                "name": "dm",
+                "label": "Dm",
+                "type": "str",
+                "options": [
+                    "yes",
+                    "no",
+                    " yes",
+                    "\tno",
+                    "\tyes"
+                ],
+                "hint": "Enter value for dm"
+            },
+            {
+                "name": "cad",
+                "label": "Cad",
+                "type": "str",
+                "options": [
+                    "no",
+                    "yes",
+                    "\tno"
+                ],
+                "hint": "Enter value for cad"
+            },
+            {
+                "name": "appet",
+                "label": "Appet",
+                "type": "str",
+                "options": [
+                    "good",
+                    "poor"
+                ],
+                "hint": "Enter value for appet"
+            },
+            {
+                "name": "pe",
+                "label": "Pe",
+                "type": "str",
+                "options": [
+                    "no",
+                    "yes"
+                ],
+                "hint": "Enter value for pe"
+            },
+            {
+                "name": "ane",
+                "label": "Ane",
+                "type": "str",
+                "options": [
+                    "no",
+                    "yes"
+                ],
+                "hint": "Enter value for ane"
+            }
+        ],
+        "positive_label": "Positive for Kidney Disease",
+        "negative_label": "Negative for Kidney Disease"
+    }
+}
