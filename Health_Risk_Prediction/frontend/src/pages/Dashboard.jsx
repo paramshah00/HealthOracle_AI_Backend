@@ -21,10 +21,12 @@ const Dashboard = () => {
     const loadHistory = async () => {
         try {
             const data = await predictionService.getHistory();
-            setHistory(data.predictions);
+            // Sort by date descending (most recent first)
+            const sorted = [...data.predictions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            setHistory(sorted);
             const total = data.total;
-            const highRisk = data.predictions.filter(p => p.probability >= 0.5).length;
-            const latest = data.predictions.length > 0 ? data.predictions[0].risk_level : '—';
+            const highRisk = sorted.filter(p => p.probability >= 0.5).length;
+            const latest = sorted.length > 0 ? sorted[0].risk_level : '—';
             setStats({ total, highRisk, latestRisk: latest });
         } catch (err) {
             console.error('Failed to load history:', err);

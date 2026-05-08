@@ -66,7 +66,7 @@ const AIChat = () => {
             } else {
                 localStorage.removeItem(storageKey);
             }
-        } catch (e) {}
+        } catch (e) { }
 
         if (predictionId) {
             const autoPrompt = "Please break down this prediction result. Explain the key risk factors based on my metrics, and give me a clear action plan.";

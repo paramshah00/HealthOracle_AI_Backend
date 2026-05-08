@@ -23,18 +23,18 @@ const Analytics = () => {
     const loadData = async () => {
         try {
             const res = await analyticsService.getPersonalAnalytics();
-            
+
             const formattedData = {};
             let firstDisease = '';
-            
+
             for (const [disease, diseaseInfo] of Object.entries(res)) {
                 if (!firstDisease) firstDisease = disease;
-                
+
                 formattedData[disease] = {
                     ...diseaseInfo,
                     trends: diseaseInfo.trends.map(t => {
                         const dateObj = new Date(t.date);
-                        
+
                         // Parse metrics so "Yes"/"No" strings become chartable numbers (1/0)
                         const parsedMetrics = {};
                         for (const [k, v] of Object.entries(t.metrics || {})) {
@@ -50,11 +50,11 @@ const Analytics = () => {
 
                         return {
                             ...t,
-                            displayDate: dateObj.toLocaleString('en-IN', { 
-                                month: 'short', 
-                                day: 'numeric', 
-                                hour: 'numeric', 
-                                minute: '2-digit' 
+                            displayDate: dateObj.toLocaleString('en-IN', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit'
                             }),
                             probabilityPercent: parseFloat((t.probability * 100).toFixed(1)),
                             ...parsedMetrics
@@ -62,7 +62,7 @@ const Analytics = () => {
                     })
                 };
             }
-            
+
             setAllData(formattedData);
             if (firstDisease) {
                 setSelectedDisease(firstDisease);
@@ -96,20 +96,17 @@ const Analytics = () => {
         );
     }
 
-    // Determine all available metric fields from the first trend entry (excluding pregnancies, age, sex)
-    const allMetrics = data.trends.length > 0 ? Object.keys(data.trends[0].metrics) : [];
-    const fieldsToTrack = allMetrics.filter(m => {
-        const lower = m.toLowerCase();
-        return lower !== 'pregnancies' && lower !== 'age' && lower !== 'sex' && lower !== 'gender';
-    });
-    
+    // Use the authoritative chartable_fields list from the backend (derived from DISEASE_REGISTRY)
+    // This perfectly aligns the analytics with the prediction input form
+    const fieldsToTrack = data.chartable_fields || [];
+
     // Simple AI heuristic generating a summary
     const generateAIAssistantSummary = () => {
         if (data.trends.length < 2) return `I need more than one ${selectedDisease.replace(/_/g, ' ')} prediction record to analyze your progress over time. Keep logging!`;
         const first = data.trends[0];
         const last = data.trends[data.trends.length - 1];
         const probDiff = last.probabilityPercent - first.probabilityPercent;
-        
+
         let summary = `You have logged ${data.trends.length} predictions for ${selectedDisease.replace(/_/g, ' ')}. `;
         if (probDiff < -5) {
             summary += `Fantastic work! Your overall risk probability has significantly decreased by ${Math.abs(probDiff).toFixed(1)}% since your first reading. Keep maintaining your healthy habits!`;
@@ -158,7 +155,7 @@ const Analytics = () => {
                                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
                                     <XAxis dataKey="displayDate" stroke="var(--text-secondary)" />
                                     <YAxis stroke="var(--text-secondary)" unit="%" />
-                                    <Tooltip 
+                                    <Tooltip
                                         contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
                                         itemStyle={{ color: 'var(--text-primary)' }}
                                     />
@@ -180,8 +177,8 @@ const Analytics = () => {
 
                     {/* Individual Parameter Trends */}
                     {fieldsToTrack.map(field => (
-                        <div className="analytics-card" key={field}>
-                            <h3>{field} History</h3>
+                        <div className="analytics-card" key={field.field_name}>
+                            <h3>{field.label} {field.unit ? `(${field.unit})` : ''}</h3>
                             <div className="chart-container" style={{ height: '220px' }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={data.trends} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -189,7 +186,7 @@ const Analytics = () => {
                                         <XAxis dataKey="displayDate" stroke="var(--text-secondary)" hide />
                                         <YAxis stroke="var(--text-secondary)" />
                                         <Tooltip contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }} />
-                                        <Line type="monotone" dataKey={field} name={field} stroke="#8b5cf6" strokeWidth={2} activeDot={{ r: 6 }} />
+                                        <Line type="monotone" dataKey={field.field_name} name={field.label} stroke="#8b5cf6" strokeWidth={2} activeDot={{ r: 6 }} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
@@ -218,16 +215,16 @@ const Analytics = () => {
                                 </h4>
                                 <div style={{ height: '160px', position: 'relative' }}>
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <RadialBarChart 
-                                            cx="50%" 
-                                            cy="50%" 
-                                            innerRadius="80%" 
-                                            outerRadius="100%" 
-                                            barSize={10} 
-                                            data={[{ 
-                                                name: 'Probability', 
-                                                value: rec.probabilityPercent, 
-                                                fill: rec.probabilityPercent >= 70 ? '#ef4444' : rec.probabilityPercent >= 40 ? '#f59e0b' : '#10b981' 
+                                        <RadialBarChart
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius="80%"
+                                            outerRadius="100%"
+                                            barSize={10}
+                                            data={[{
+                                                name: 'Probability',
+                                                value: rec.probabilityPercent,
+                                                fill: rec.probabilityPercent >= 70 ? '#ef4444' : rec.probabilityPercent >= 40 ? '#f59e0b' : '#10b981'
                                             }]}
                                             startAngle={90}
                                             endAngle={-270}

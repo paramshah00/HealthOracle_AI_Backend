@@ -3,7 +3,7 @@ ML Service — Multi-Disease Model Registry & Inference Engine
 
 Supports loading multiple disease prediction pipelines.
 Currently trained: Diabetes
-Future: Heart Disease, Hypertension, Stroke, Kidney Disease
+Future: Heart Disease, Hypertension, Kidney Disease
 """
 
 import os
@@ -225,342 +225,97 @@ DISEASE_REGISTRY = {
         "display_name": "Hypertension",
         "features": [
             {
-                "name": "age",
+                "name": "Age",
                 "label": "Age",
-                "type": "float",
-                "min": 11.0,
-                "max": 98.0,
+                "type": "int",
+                "min": 18,
+                "max": 100,
+                "unit": "years",
                 "hint": "Patient's age in years"
             },
             {
-                "name": "sex",
-                "label": "Sex",
+                "name": "BMI",
+                "label": "Body Mass Index (BMI)",
                 "type": "float",
-                "options": [{"label": "Female", "value": 0.0}, {"label": "Male", "value": 1.0}],
-                "hint": "1 = Male, 0 = Female"
+                "min": 10.0,
+                "max": 60.0,
+                "unit": "kg/m²",
+                "hint": "Weight(kg) / Height(m)²"
             },
             {
-                "name": "cp",
-                "label": "Chest Pain Type",
-                "type": "float",
-                "options": [
-                    {"label": "Typical Angina", "value": 0.0},
-                    {"label": "Atypical Angina", "value": 1.0},
-                    {"label": "Non-anginal Pain", "value": 2.0},
-                    {"label": "Asymptomatic", "value": 3.0}
-                ],
-                "hint": "Type of chest pain experienced"
-            },
-            {
-                "name": "trestbps",
-                "label": "Resting Blood Pressure",
-                "type": "float",
-                "min": 94.0,
-                "max": 200.0,
+                "name": "Systolic_BP",
+                "label": "Systolic Blood Pressure",
+                "type": "int",
+                "min": 80,
+                "max": 250,
                 "unit": "mm Hg",
-                "hint": "Blood pressure measured at rest"
+                "hint": "Upper number of blood pressure reading"
             },
             {
-                "name": "chol",
-                "label": "Serum Cholesterol",
-                "type": "float",
-                "min": 126.0,
-                "max": 564.0,
-                "unit": "mg/dl",
-                "hint": "Cholesterol level - a key heart disease risk factor"
+                "name": "Diastolic_BP",
+                "label": "Diastolic Blood Pressure",
+                "type": "int",
+                "min": 40,
+                "max": 160,
+                "unit": "mm Hg",
+                "hint": "Lower number of blood pressure reading"
             },
             {
-                "name": "fbs",
-                "label": "Fasting Blood Sugar > 120",
-                "type": "float",
-                "options": [{"label": "No", "value": 0.0}, {"label": "Yes", "value": 1.0}],
-                "hint": "Fasting blood sugar level greater than 120 mg/dl"
+                "name": "Family_History",
+                "label": "Family History of Hypertension",
+                "type": "str",
+                "options": ["yes", "no"],
+                "hint": "Do any close relatives have hypertension?"
             },
             {
-                "name": "restecg",
-                "label": "Resting ECG Results",
-                "type": "float",
-                "options": [
-                    {"label": "Normal", "value": 0.0},
-                    {"label": "ST-T abnormality", "value": 1.0},
-                    {"label": "LV hypertrophy", "value": 2.0}
-                ],
-                "hint": "Resting electrocardiographic results"
+                "name": "Diabetes",
+                "label": "Diabetes",
+                "type": "str",
+                "options": ["yes", "no"],
+                "hint": "Does the patient have diabetes?"
             },
             {
-                "name": "thalach",
-                "label": "Max Heart Rate",
-                "type": "float",
-                "min": 71.0,
-                "max": 202.0,
-                "hint": "Highest heart rate recorded during exercise testing"
+                "name": "Smoking_Status",
+                "label": "Smoking Status",
+                "type": "str",
+                "options": ["yes", "no"],
+                "hint": "Current smoking status"
             },
             {
-                "name": "exang",
-                "label": "Exercise Induced Angina",
-                "type": "float",
-                "options": [{"label": "No", "value": 0.0}, {"label": "Yes", "value": 1.0}],
-                "hint": "Chest pain experienced during exercise"
+                "name": "Physical_Activity_Level",
+                "label": "Physical Activity Level",
+                "type": "str",
+                "options": ["low", "moderate", "high"],
+                "hint": "Level of regular physical activity"
             },
             {
-                "name": "oldpeak",
-                "label": "ST Depression",
+                "name": "Glucose",
+                "label": "Glucose Level",
+                "type": "int",
+                "min": 50,
+                "max": 300,
+                "unit": "mg/dL",
+                "hint": "Blood glucose level"
+            },
+            {
+                "name": "Salt_Intake",
+                "label": "Salt Intake",
                 "type": "float",
                 "min": 0.0,
-                "max": 6.2,
-                "hint": "ECG measure of cardiac stress"
-            },
-            {
-                "name": "slope",
-                "label": "Slope of Peak Exercise ST",
-                "type": "float",
-                "options": [
-                    {"label": "Downsloping", "value": 0.0},
-                    {"label": "Flat", "value": 1.0},
-                    {"label": "Upsloping", "value": 2.0}
-                ],
-                "hint": "Indicates heart stress pattern"
-            },
-            {
-                "name": "ca",
-                "label": "Major Vessels Colored",
-                "type": "float",
-                "options": [
-                    {"label": "0 vessels", "value": 0.0},
-                    {"label": "1 vessel", "value": 1.0},
-                    {"label": "2 vessels", "value": 2.0},
-                    {"label": "3 vessels", "value": 3.0}
-                ],
-                "hint": "Number of major blood vessels visible via fluoroscopy"
-            },
-            {
-                "name": "thal",
-                "label": "Thalassemia",
-                "type": "float",
-                "options": [
-                    {"label": "Normal", "value": 1.0},
-                    {"label": "Fixed Defect", "value": 2.0},
-                    {"label": "Reversible Defect", "value": 3.0}
-                ],
-                "hint": "Blood disorder indicator"
+                "max": 20.0,
+                "unit": "g/day",
+                "hint": "Daily salt intake in grams"
             }
         ],
         "positive_label": "Positive for Hypertension",
         "negative_label": "Negative for Hypertension"
-    },
-    "stroke": {
-        "model_file": "stroke_pipeline.pkl",
-        "display_name": "Stroke",
-        "features": [
-            {
-                "name": "gender",
-                "label": "Gender",
-                "type": "str",
-                "options": [
-                    "Male",
-                    "Female",
-                    "Other"
-                ],
-                "hint": "Enter value for gender"
-            },
-            {
-                "name": "age",
-                "label": "Age",
-                "type": "float",
-                "min": 0.08,
-                "max": 82.0,
-                "hint": "Enter value for age"
-            },
-            {
-                "name": "hypertension",
-                "label": "Hypertension",
-                "type": "float",
-                "options": [
-                    {"label": "No", "value": 0.0},
-                    {"label": "Has hypertension", "value": 1.0}
-                ],
-                "hint": "A major stroke risk factor"
-            },
-            {
-                "name": "heart_disease",
-                "label": "Heart Disease",
-                "type": "float",
-                "options": [
-                    {"label": "No", "value": 0.0},
-                    {"label": "Has heart disease", "value": 1.0}
-                ],
-                "hint": "Another major stroke risk factor"
-            },
-            {
-                "name": "ever_married",
-                "label": "Ever Married",
-                "type": "str",
-                "options": [
-                    "Yes",
-                    "No"
-                ],
-                "hint": "Enter value for ever_married"
-            },
-            {
-                "name": "work_type",
-                "label": "Work Type",
-                "type": "str",
-                "options": [
-                    "Private",
-                    "Self-employed",
-                    "Govt_job",
-                    "children",
-                    "Never_worked"
-                ],
-                "hint": "Enter value for work_type"
-            },
-            {
-                "name": "Residence_type",
-                "label": "Residence Type",
-                "type": "str",
-                "options": [
-                    "Urban",
-                    "Rural"
-                ],
-                "hint": "Enter value for Residence_type"
-            },
-            {
-                "name": "avg_glucose_level",
-                "label": "Avg Glucose Level",
-                "type": "float",
-                "min": 55.12,
-                "max": 271.74,
-                "hint": "Enter value for avg_glucose_level"
-            },
-            {
-                "name": "bmi",
-                "label": "Bmi",
-                "type": "float",
-                "min": 10.3,
-                "max": 97.6,
-                "hint": "Enter value for bmi"
-            },
-            {
-                "name": "smoking_status",
-                "label": "Smoking Status",
-                "type": "str",
-                "options": [
-                    "formerly smoked",
-                    "never smoked",
-                    "smokes",
-                    "Unknown"
-                ],
-                "hint": "Enter value for smoking_status"
-            }
-        ],
-        "positive_label": "Positive for Stroke",
-        "negative_label": "Negative for Stroke"
     },
     "kidney_disease": {
         "model_file": "kidney_disease_pipeline.pkl",
         "display_name": "Kidney Disease",
         "features": [
             {
-                "name": "age",
-                "label": "Age",
-                "type": "float",
-                "min": 2.0,
-                "max": 90.0,
-                "hint": "Patient age in years"
-            },
-            {
-                "name": "bp",
-                "label": "Blood Pressure",
-                "type": "float",
-                "min": 50.0,
-                "max": 180.0,
-                "unit": "mm Hg",
-                "hint": "Diastolic BP in mm Hg"
-            },
-            {
-                "name": "sg",
-                "label": "Specific Gravity",
-                "type": "float",
-                "min": 1.0,
-                "max": 1.02,
-                "hint": "Urine density (1.005-1.025)"
-            },
-            {
-                "name": "al",
-                "label": "Albumin",
-                "type": "float",
-                "min": 0.0,
-                "max": 5.0,
-                "hint": "Protein in urine (0-5); higher = kidney leakage"
-            },
-            {
-                "name": "su",
-                "label": "Sugar",
-                "type": "float",
-                "min": 0.0,
-                "max": 5.0,
-                "hint": "Sugar in urine (0-5); elevated = diabetes-related kidney stress"
-            },
-            {
-                "name": "rbc",
-                "label": "Red Blood Cells",
-                "type": "str",
-                "options": [
-                    {"label": "Normal", "value": "normal"},
-                    {"label": "Abnormal", "value": "abnormal"}
-                ],
-                "hint": "Urine RBC; abnormal may indicate kidney damage"
-            },
-            {
-                "name": "pc",
-                "label": "Pus Cell",
-                "type": "str",
-                "options": [
-                    {"label": "Normal", "value": "normal"},
-                    {"label": "Abnormal", "value": "abnormal"}
-                ],
-                "hint": "White blood cells in urine; indicates infection"
-            },
-            {
-                "name": "pcc",
-                "label": "Pus Cell Clumps",
-                "type": "str",
-                "options": [
-                    {"label": "Not Present", "value": "notpresent"},
-                    {"label": "Present", "value": "present"}
-                ],
-                "hint": "Presence of pus cell clumps"
-            },
-            {
-                "name": "ba",
-                "label": "Bacteria",
-                "type": "str",
-                "options": [
-                    {"label": "Not Present", "value": "notpresent"},
-                    {"label": "Present", "value": "present"}
-                ],
-                "hint": "Bacteria in urine"
-            },
-            {
-                "name": "bgr",
-                "label": "Blood Glucose Random",
-                "type": "float",
-                "min": 22.0,
-                "max": 490.0,
-                "unit": "mg/dL",
-                "hint": "Random blood sugar level"
-            },
-            {
-                "name": "bu",
-                "label": "Blood Urea",
-                "type": "float",
-                "min": 1.5,
-                "max": 391.0,
-                "unit": "mg/dL",
-                "hint": "Urea in blood; high = kidneys not filtering waste properly"
-            },
-            {
-                "name": "sc",
+                "name": "Serum creatinine (mg/dl)",
                 "label": "Serum Creatinine",
                 "type": "float",
                 "min": 0.4,
@@ -569,118 +324,79 @@ DISEASE_REGISTRY = {
                 "hint": "Creatinine level; the most important CKD marker"
             },
             {
-                "name": "sod",
-                "label": "Sodium",
+                "name": "Blood urea (mg/dl)",
+                "label": "Blood Urea",
                 "type": "float",
-                "min": 4.5,
-                "max": 163.0,
-                "unit": "mEq/L",
-                "hint": "Blood sodium level; kidneys regulate sodium balance"
+                "min": 1.5,
+                "max": 391.0,
+                "unit": "mg/dL",
+                "hint": "Urea in blood; high = kidneys not filtering waste properly"
             },
             {
-                "name": "pot",
-                "label": "Potassium",
+                "name": "Estimated Glomerular Filtration Rate (eGFR)",
+                "label": "Estimated GFR (eGFR)",
                 "type": "float",
-                "min": 2.5,
-                "max": 47.0,
-                "unit": "mEq/L",
-                "hint": "Blood potassium; dangerous if kidneys fail to filter it"
+                "min": 0.0,
+                "max": 150.0,
+                "unit": "mL/min/1.73m²",
+                "hint": "Kidney filtration rate; lower values indicate worse function"
             },
             {
-                "name": "hemo",
-                "label": "Hemoglobin",
+                "name": "Hemoglobin level (gms)",
+                "label": "Hemoglobin Level",
                 "type": "float",
-                "min": 3.1,
-                "max": 17.8,
+                "min": 3.0,
+                "max": 18.0,
                 "unit": "g/dL",
                 "hint": "Blood hemoglobin; CKD often causes anemia"
             },
             {
-                "name": "pcv",
-                "label": "Packed Cell Volume",
+                "name": "Albumin in urine",
+                "label": "Albumin in Urine",
+                "type": "int",
+                "min": 0,
+                "max": 5,
+                "hint": "Protein in urine (0-5); higher = kidney leakage"
+            },
+            {
+                "name": "Specific gravity of urine",
+                "label": "Specific Gravity of Urine",
                 "type": "float",
-                "min": 9.0,
-                "max": 54.0,
-                "unit": "%",
-                "hint": "% of red cells in blood (hematocrit); low = anemia"
+                "min": 1.0,
+                "max": 1.03,
+                "hint": "Urine density (1.005-1.025 normal range)"
             },
             {
-                "name": "wc",
-                "label": "White Blood Cell Count",
-                "type": "float",
-                "min": 2200.0,
-                "max": 26400.0,
-                "unit": "cells/cumm",
-                "hint": "WBC count; high = infection or inflammation"
+                "name": "Blood pressure (mm/Hg)",
+                "label": "Blood Pressure",
+                "type": "int",
+                "min": 50,
+                "max": 200,
+                "unit": "mm Hg",
+                "hint": "Diastolic blood pressure in mm Hg"
             },
             {
-                "name": "rc",
-                "label": "Red Blood Cell Count",
-                "type": "float",
-                "min": 2.1,
-                "max": 8.0,
-                "unit": "millions/cmm",
-                "hint": "RBC count; low = anemia from kidney failure"
+                "name": "Age of the patient",
+                "label": "Age",
+                "type": "int",
+                "min": 2,
+                "max": 100,
+                "unit": "years",
+                "hint": "Patient age in years"
             },
             {
-                "name": "htn",
-                "label": "Hypertension",
-                "type": "str",
-                "options": [
-                    {"label": "No", "value": "no"},
-                    {"label": "Yes", "value": "yes"}
-                ],
-                "hint": "Hypertension is both a cause and effect of CKD"
-            },
-            {
-                "name": "dm",
+                "name": "Diabetes mellitus (yes/no)",
                 "label": "Diabetes Mellitus",
                 "type": "str",
-                "options": [
-                    {"label": "No", "value": "no"},
-                    {"label": "Yes", "value": "yes"}
-                ],
+                "options": ["yes", "no"],
                 "hint": "Diabetes is the #1 cause of CKD"
             },
             {
-                "name": "cad",
-                "label": "Coronary Artery Disease",
+                "name": "Hypertension (yes/no)",
+                "label": "Hypertension",
                 "type": "str",
-                "options": [
-                    {"label": "No", "value": "no"},
-                    {"label": "Yes", "value": "yes"}
-                ],
-                "hint": "Heart disease commonly co-occurs with kidney disease"
-            },
-            {
-                "name": "appet",
-                "label": "Appetite",
-                "type": "str",
-                "options": [
-                    {"label": "Good", "value": "good"},
-                    {"label": "Poor", "value": "poor"}
-                ],
-                "hint": "Poor appetite is a symptom of advanced CKD"
-            },
-            {
-                "name": "pe",
-                "label": "Pedal Edema",
-                "type": "str",
-                "options": [
-                    {"label": "No", "value": "no"},
-                    {"label": "Yes", "value": "yes"}
-                ],
-                "hint": "Swelling in feet/ankles due to fluid retention"
-            },
-            {
-                "name": "ane",
-                "label": "Anemia",
-                "type": "str",
-                "options": [
-                    {"label": "No", "value": "no"},
-                    {"label": "Yes", "value": "yes"}
-                ],
-                "hint": "CKD often damages erythropoietin production, causing anemia"
+                "options": ["yes", "no"],
+                "hint": "Hypertension is both a cause and effect of CKD"
             }
         ],
         "positive_label": "Positive for Kidney Disease",
@@ -770,32 +486,6 @@ DISEASE_SPECIFIC_GUIDANCE = {
             "✅ Keep dietary sodium at reasonable levels",
             "🏋️ Stay active to keep blood vessels flexible",
             "🩺 Check your blood pressure occasionally to ensure stability",
-        ]
-    },
-    "stroke": {
-        "critical": [
-            "🏥 Seek immediate emergency care — time is brain tissue",
-            "🚨 Memorize F.A.S.T. (Face drooping, Arm weakness, Speech difficulty, Time to call)",
-            "💊 Discuss blood thinners or anticoagulants with a neurologist",
-            "⚠️ Keep cholesterol and blood pressure under strict medical control",
-        ],
-        "high": [
-            "👨‍⚕️ Consult a neurologist or specialist within 1-2 weeks",
-            "🥗 Adopt a neuro-protective diet rich in omega-3s and antioxidants",
-            "🚭 Immediately cease all tobacco use and avoid secondhand smoke",
-            "📊 Strictly manage underlying conditions like AFib or Hypertension",
-        ],
-        "moderate": [
-            "🥦 Follow a Mediterranean-style diet to support brain health",
-            "🚶 Maintain regular physical activity to improve circulation",
-            "⚖️ Maintain a healthy BMI and manage blood sugar levels",
-            "📅 Schedule routine vascular health screenings",
-        ],
-        "low": [
-            "✅ Continue your active and healthy lifestyle",
-            "🧠 Engage in mentally stimulating activities",
-            "🩺 Get annual check-ups to monitor blood pressure/cholesterol",
-            "💨 Keep a smoke-free environment",
         ]
     },
     "kidney_disease": {

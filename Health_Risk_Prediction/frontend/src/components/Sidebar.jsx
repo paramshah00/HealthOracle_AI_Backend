@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { authService } from '../services/api';
+import UserProfileModal from './UserProfileModal';
 
 const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const user = authService.getUser();
+    const [user, setUser] = useState(authService.getUser());
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     
     // Support saving collapsed state to localStorage so it persists across reloads
     const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -24,12 +26,13 @@ const Sidebar = () => {
     };
 
     return (
-        <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-            <div className="sidebar-header-wrapper">
+        <>
+            <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+                <div className="sidebar-header-wrapper">
                 <div className="sidebar-logo">
-                    <Link to="/dashboard" title="HealthPredict">
+                    <Link to="/dashboard" title="HealthOracle AI">
                         <span className="nav-icon" style={{ fontSize: '1.4rem' }}>🩺</span> 
-                        <span className="logo-text">HealthPredict</span>
+                        <span className="logo-text">HealthOracle AI</span>
                     </Link>
                 </div>
                 <button 
@@ -61,17 +64,30 @@ const Sidebar = () => {
                     <span className="nav-icon">📈</span>
                     <span className="nav-label">Analytics</span>
                 </Link>
-                <Link to="/insights" className={`sidebar-link ${location.pathname === '/insights' ? 'active' : ''}`} title="Community Insights">
-                    <span className="nav-icon">🌍</span>
-                    <span className="nav-label">Community Insights</span>
-                </Link>
+
                 <Link to="/ai-chat" className={`sidebar-link ${location.pathname === '/ai-chat' ? 'active' : ''}`} title="AI Assistant">
                     <span className="nav-icon">🤖</span>
                     <span className="nav-label">AI Assistant</span>
                 </Link>
+
+                {/* Doctor Consultation Section */}
+                <div className="sidebar-divider"></div>
+                <Link to="/doctors" className={`sidebar-link ${location.pathname === '/doctors' ? 'active' : ''}`} title="Doctors">
+                    <span className="nav-icon">👨‍⚕️</span>
+                    <span className="nav-label">Doctors</span>
+                </Link>
+                <Link to="/appointments" className={`sidebar-link ${location.pathname === '/appointments' || location.pathname === '/book-appointment' ? 'active' : ''}`} title="My Appointments">
+                    <span className="nav-icon">📅</span>
+                    <span className="nav-label">My Appointments</span>
+                </Link>
             </nav>
             <div className="sidebar-footer">
-                <div className="sidebar-user" title={user?.full_name || 'User'}>
+                <div 
+                    className="sidebar-user" 
+                    title="Click to view/edit profile"
+                    onClick={() => setIsProfileModalOpen(true)}
+                    style={{ cursor: 'pointer' }}
+                >
                     <div className="sidebar-avatar">{user?.full_name?.charAt(0)?.toUpperCase() || 'U'}</div>
                     <div className="sidebar-user-info">
                         <div className="sidebar-user-name">{user?.full_name || 'User'}</div>
@@ -89,7 +105,14 @@ const Sidebar = () => {
                     <span className="nav-label">Logout</span>
                 </button>
             </div>
-        </aside>
+            </aside>
+            <UserProfileModal 
+                isOpen={isProfileModalOpen} 
+                onClose={() => setIsProfileModalOpen(false)} 
+                user={user} 
+                onProfileUpdated={(updatedUser) => setUser(updatedUser)} 
+            />
+        </>
     );
 };
 

@@ -6,6 +6,7 @@ import json
 from backend.database import get_db
 from backend.models import User, PredictionResult
 from backend.auth import get_current_user
+from backend.ml_service import DISEASE_REGISTRY
 
 router = APIRouter()
 
@@ -17,6 +18,7 @@ def get_personal_analytics(
     """
     Returns historical tracking of the user's health parameters 
     across multiple predictions, grouped by disease name.
+    Only includes diseases that are still active in the registry.
     """
     predictions = (
         db.query(PredictionResult)
@@ -29,10 +31,25 @@ def get_personal_analytics(
 
     for p in predictions:
         disease = p.disease_name
+        # Skip predictions for diseases that have been removed from the registry
+        if disease not in DISEASE_REGISTRY:
+            continue
+        
         if disease not in disease_data:
+            # Derive chartable fields from the DISEASE_REGISTRY for this disease
+            # We include all features so the frontend exactly matches the input form
+            chartable = []
+            for feat in DISEASE_REGISTRY[disease].get("features", []):
+                chartable.append({
+                    "field_name": feat["name"],
+                    "label": feat.get("label", feat["name"]),
+                    "unit": feat.get("unit", "")
+                })
+
             disease_data[disease] = {
                 "trends": [],
-                "risk_distribution": {"Low": 0, "Moderate": 0, "High": 0, "Critical": 0}
+                "risk_distribution": {"Low": 0, "Moderate": 0, "High": 0, "Critical": 0},
+                "chartable_fields": chartable
             }
         
         disease_data[disease]["trends"].append({
@@ -71,6 +88,10 @@ def get_public_analytics(db: Session = Depends(get_db)):
 
     for p in all_predictions:
         disease = p.disease_name
+        # Skip predictions for diseases that have been removed from the registry
+        if disease not in DISEASE_REGISTRY:
+            continue
+        
         if disease not in accumulators:
             accumulators[disease] = {
                 "high_sums": {}, "high_counts": {},

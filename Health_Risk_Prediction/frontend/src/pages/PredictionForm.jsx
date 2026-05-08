@@ -285,6 +285,20 @@ const PredictionForm = () => {
                                 </div>
                             )}
 
+                            {/* Doctor Consultation CTA — shown for High/Critical risk */}
+                            {(result.risk_level === 'Critical' || result.risk_level === 'High') && (
+                                <div className="doctor-consult-cta">
+                                    <span>👨‍⚕️</span>
+                                    <div>
+                                        <strong>Consult a Specialist</strong>
+                                        <p>Your risk level is elevated — book an appointment with a specialist doctor for expert guidance</p>
+                                    </div>
+                                    <button className="btn-primary btn-sm" onClick={() => navigate('/book-appointment', { state: { disease: selectedDisease, predictionId: result.id } })}>
+                                        Book Appointment →
+                                    </button>
+                                </div>
+                            )}
+
                             <div className="result-actions">
                                 <button className="btn-outline" onClick={() => { setResult(null); setFormValues({}); }}>
                                     New Prediction

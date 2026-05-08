@@ -6,8 +6,8 @@ from datetime import timedelta
 
 from backend.database import get_db
 from backend.models import User
-from backend.schemas import UserCreate, UserResponse, Token, LoginRequest, RegisterResponse
-from backend.auth import get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from backend.schemas import UserCreate, UserResponse, Token, LoginRequest, RegisterResponse, UserProfileUpdate
+from backend.auth import get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user
 
 router = APIRouter()
 
@@ -91,3 +91,36 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     )
 
     return {"access_token": access_token, "token_type": "bearer", "user": user}
+
+
+@router.get("/profile", response_model=UserResponse)
+def get_profile(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@router.put("/profile", response_model=UserResponse)
+def update_profile(
+    profile_data: UserProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if profile_data.full_name is not None:
+        current_user.full_name = profile_data.full_name
+    
+    if profile_data.phone is not None:
+        # Check if phone is taken by another user
+        if current_user.phone != profile_data.phone:
+            existing = db.query(User).filter(User.phone == profile_data.phone).first()
+            if existing:
+                raise HTTPException(status_code=400, detail="Phone number already registered")
+        current_user.phone = profile_data.phone
+        
+    if profile_data.age is not None:
+        current_user.age = profile_data.age
+        
+    if profile_data.gender is not None:
+        current_user.gender = profile_data.gender
+
+    db.commit()
+    db.refresh(current_user)
+    return current_user

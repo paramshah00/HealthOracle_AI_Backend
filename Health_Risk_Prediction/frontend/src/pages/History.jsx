@@ -19,7 +19,9 @@ const HistoryList = () => {
     const loadHistory = async () => {
         try {
             const data = await predictionService.getHistory();
-            setHistory(data.predictions);
+            // Sort by date descending (most recent first)
+            const sorted = [...data.predictions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            setHistory(sorted);
         } catch (err) {
             console.error('Failed to load history:', err);
         } finally {
